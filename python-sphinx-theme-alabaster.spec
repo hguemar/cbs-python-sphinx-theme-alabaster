@@ -1,9 +1,13 @@
 %global pypi_name alabaster
 %global srcname sphinx-theme-%{pypi_name}
 
+%if 0%{?fedora}
+%global with_python3 1
+%endif
+
 Name:           python-%{srcname}
 Version:        0.7.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Configurable sidebar-enabled Sphinx theme
 
 License:        BSD
@@ -19,17 +23,7 @@ This theme is a modified "Kr" Sphinx theme from @kennethreitz (especially as
 used in his Requests project), which was itself originally based on @mitsuhiko's
 theme used for Flask & related projects.
 
-
-%package -n python2-%{srcname}
-Summary:        Configurable sidebar-enabled Sphinx theme
-%{?python_provide:%python_provide python2-%{srcname}}
-
-%description -n python2-%{srcname}
-This theme is a modified "Kr" Sphinx theme from @kennethreitz (especially as
-used in his Requests project), which was itself originally based on @mitsuhiko's
-theme used for Flask & related projects.
-
-
+%if 0%{?with_python3}
 %package -n     python3-%{srcname}
 Summary:        Configurable sidebar-enabled Sphinx theme
 BuildArch:      noarch
@@ -41,7 +35,7 @@ BuildRequires:  python3-setuptools
 This theme is a modified "Kr" Sphinx theme from @kennethreitz (especially as
 used in his Requests project), which was itself originally based on @mitsuhiko's
 theme used for Flask & related projects.
-
+%endif
 
 %prep
 %setup -qn %{pypi_name}-%{version}
@@ -52,28 +46,36 @@ rm -rf %{pypi_name}.egg-info
 
 %build
 %py2_build
+%if 0%{?with_python3}
 %py3_build
+%endif
 
 
 %install
 %py2_install
+%if 0%{?with_python3}
 %py3_install
+%endif
 
 
-%files -n python2-%{srcname}
+%files
 %license LICENSE
 %doc README.rst
 %{python2_sitelib}/%{pypi_name}-%{version}-py%{python2_version}.egg-info/
 %{python2_sitelib}/%{pypi_name}/
 
+%if 0%{?with_python3}
 %files -n python3-%{srcname}
 %license LICENSE
 %doc README.rst
 %{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info/
 %{python3_sitelib}/%{pypi_name}/
-
+%endif
 
 %changelog
+* Sun Jan 24 2016 Haïkel Guémar <hguemar@fedoraproject.org> - 0.7.6-6
+- Adapted from Fedora master spec for CentOS Cloud SIG
+
 * Thu Nov 5 2015 Julien Enselme <jujens@jujens.eu> - 0.7.6-5
 - Rebuilt for python 3.5
 
